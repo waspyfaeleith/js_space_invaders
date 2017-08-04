@@ -1,8 +1,8 @@
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 
-var paddleHeight = 10;
-var paddleWidth = 80;
+var paddleHeight = 30;
+var paddleWidth = 60;
 var paddleX = (canvas.width - paddleWidth) / 2;
 
 var x = canvas.width / 2;
@@ -15,8 +15,8 @@ var alienY = 0;
 var alienDx = 1;
 var alienDy = 0;
 
-var ballRadius = 5;
-var ballSpeed = 2;
+var missileRadius = 5;
+var missileSpeed = 2;
 
 var rightPressed = false;
 var leftPressed = false;
@@ -26,7 +26,7 @@ var alienRowCount = 5;
 var alienColumnCount = 12;
 var alienWidth = 40;
 var alienHeight = 30;
-var alienPadding = 20;
+var alienPadding = 15;
 var alienOffsetTop = 70;
 var alienOffsetLeft = 15;
 var alienColour;
@@ -39,7 +39,7 @@ var numAliensHit = 0;
 var lives = 3;
 
 var aliens = [];
-var ballStatus = 0;
+var missileStatus = 0;
 
 function setUpAliens() {
   for (column = 0; column < alienColumnCount; column++) {
@@ -55,7 +55,7 @@ function setAlienColourAndScore(row) {
     case 0:
       alienScore = 50;
       alienColour = '#0200cc';
-      alienImage = 'public/images/invader_1.png';
+      alienImage = 'public/images/invader_3.png';
       break;
     case 1:
       alienScore = 40;
@@ -65,7 +65,7 @@ function setAlienColourAndScore(row) {
     case 2:
       alienScore = 30;
       alienColour = '#00ff03';
-      alienImage = 'public/images/invader_3.png';
+      alienImage = 'public/images/invader_2.png';
       break;
     case 3:
       alienScore = 20;
@@ -75,18 +75,9 @@ function setAlienColourAndScore(row) {
     case 4:
       alienScore = 10;
       alienColour = '#ffff00';
-      alienImage = 'public/images/invader_2.png';
+      alienImage = 'public/images/invader_1.png';
       break;
   }
-}
-
-function drawAlienImages() {
-  var img = document.createElement('img');
-    img.src = "cat.png";
-
-    var drawCat = function(){
-      context.drawImage(img, 200, 200, 90, 90);
-    }
 }
 
 function drawAliens() {
@@ -101,12 +92,6 @@ function drawAliens() {
         aliens[column][row].y = alienY;
         aliens[column][row].score = alienScore;
 
-        // ctx.beginPath();
-        // ctx.rect(alienX, alienY, alienWidth, alienHeight);
-        // ctx.fillStyle = alienColour;
-        // ctx.fill();
-        // ctx.closePath();
-
         var img = document.createElement('img');
         img.src = alienImage;
         ctx.drawImage(img, alienX, alienY, alienWidth, alienHeight);
@@ -119,10 +104,10 @@ function collisionDetection() {
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
       var alien = aliens[column][row];
-      if (alien.status == 1 && ballStatus == 1) {
+      if (alien.status == 1 && missileStatus == 1) {
         if (x > alien.x && x < alien.x + alienWidth &&
             y > alien.y && y < alien.y + alienHeight) {
-          ballStatus = 0;
+          missileStatus = 0;
           alien.status = 0;
           score += alien.score;
           numAliensHit++;
@@ -131,7 +116,7 @@ function collisionDetection() {
             numAliensHit = 0;
             y = canvas.height - paddleHeight;
             x = paddleX + (paddleWidth / 2);
-            ballSpeed++;
+            missileSpeed++;
           }
         }
       }
@@ -173,11 +158,6 @@ function drawHighScore() {
 }
 
 function drawPaddle() {
-  // ctx.beginPath();
-  // ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  // ctx.fillStyle = '#0200cc';
-  // ctx.fill();
-  // ctx.closePath();
   var img = document.createElement('img');
   img.src = 'public/images/cannon.png';
   ctx.drawImage(img, paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
@@ -197,7 +177,7 @@ function keyDownHandler(e) {
   else if (e.keyCode == 32) {
     firePressed = true;
     console.log("Fire button pressed");
-    if (ballStatus !== 1) {
+    if (missileStatus !== 1) {
       fire();
     }
   }
@@ -223,23 +203,23 @@ function mouseMoveHandler(e) {
 }
 
 function fire() {
-  ballStatus = 1;
+  missileStatus = 1;
   x = paddleX + (paddleWidth / 2);
   y = canvas.height - (paddleHeight + 2);
 }
 
-function drawBall() {
-  if (ballStatus === 1) {
+function drawMissile() {
+  if (missileStatus === 1) {
     ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = '#0200cc';
+    ctx.rect(x - 2, y, 5, 20);
+    ctx.fillStyle = '#ffff00';
     ctx.fill();
     ctx.closePath();
   }
 }
 
-function eraseBall() {
-  ballStatus = 0;
+function eraseMissile() {
+  missileStatus = 0;
   x = paddleX + (paddleWidth / 2); ;
   y = canvas.height - (paddleHeight + 2);
 }
@@ -247,7 +227,7 @@ function eraseBall() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawBall();
+  drawMissile();
   drawAliens();
   drawPaddle();
   drawScore();
@@ -258,7 +238,7 @@ function draw() {
   collisionDetection();
 
   if (y == 0) {
-    eraseBall();
+    eraseMissile();
   }
 
   if (rightPressed && paddleX < canvas.width - paddleWidth) {
