@@ -9,6 +9,12 @@ var x = canvas.width / 2;
 var y = canvas.height - (paddleHeight + 2);
 var dx = 0;
 var dy = -2;
+
+var alienX = 0
+var alienY = 0;
+var alienDx = 1;
+var alienDy = 0;
+
 var ballRadius = 5;
 var ballSpeed = 2;
 
@@ -16,94 +22,113 @@ var rightPressed = false;
 var leftPressed = false;
 var firePressed = false;
 
-var brickRowCount = 5;
-var brickColumnCount = 11;
-var brickWidth = 75;
-var brickHeight = 20;
-var brickPadding = 10;
-var brickOffsetTop = 70;
-var brickOffsetLeft = 15;
-var brickColour;
-var brickScore;
+var alienRowCount = 5;
+var alienColumnCount = 12;
+var alienWidth = 40;
+var alienHeight = 30;
+var alienPadding = 20;
+var alienOffsetTop = 70;
+var alienOffsetLeft = 15;
+var alienColour;
+var alienScore;
+var alienImage;
 
 var highScore;
 var score = 0;
-var numBricksHit = 0;
+var numAliensHit = 0;
 var lives = 3;
 
-var bricks = [];
+var aliens = [];
 var ballStatus = 0;
 
-function setUpBricks() {
-  for (column = 0; column < brickColumnCount; column++) {
-    bricks[column] = [];
-    for (row = 0; row < brickRowCount; row++) {
-      bricks[column][row] = { x: 0, y: 0, status: 1, score: 1 };
+function setUpAliens() {
+  for (column = 0; column < alienColumnCount; column++) {
+    aliens[column] = [];
+    for (row = 0; row < alienRowCount; row++) {
+      aliens[column][row] = { x: 0, y: 0, status: 1, score: 1 };
     }
   }
 }
 
-function setBrickColourAndScore(row) {
+function setAlienColourAndScore(row) {
   switch (row) {
     case 0:
-      brickScore = 50;
-      brickColour = '#0200cc';
+      alienScore = 50;
+      alienColour = '#0200cc';
+      alienImage = 'public/images/invader_1.png';
       break;
     case 1:
-      brickScore = 40;
-      brickColour = '#ff0002';
+      alienScore = 40;
+      alienColour = '#ff0002';
+      alienImage = 'public/images/invader_2.png';
       break;
     case 2:
-      brickScore = 30;
-      brickColour = '#00ff03';
+      alienScore = 30;
+      alienColour = '#00ff03';
+      alienImage = 'public/images/invader_3.png';
       break;
     case 3:
-      brickScore = 20;
-      brickColour = '#01fffe';
+      alienScore = 20;
+      alienColour = '#01fffe';
+      alienImage = 'public/images/invader_1.png';
       break;
     case 4:
-      brickScore = 10;
-      brickColour = '#ffff00';
+      alienScore = 10;
+      alienColour = '#ffff00';
+      alienImage = 'public/images/invader_2.png';
       break;
   }
 }
 
-function drawBricks() {
-  for (column = 0; column < brickColumnCount; column++) {
-    for (row = 0; row < brickRowCount; row++) {
-      if (bricks[column][row].status == 1) {
-        var brickX = (column * (brickWidth + brickPadding)) + brickOffsetLeft;
-        var brickY = (row * (brickHeight + brickPadding)) + brickOffsetTop;
-        setBrickColourAndScore(row);
+function drawAlienImages() {
+  var img = document.createElement('img');
+    img.src = "cat.png";
 
-        bricks[column][row].x = brickX;
-        bricks[column][row].y = brickY;
-        bricks[column][row].score = brickScore;
+    var drawCat = function(){
+      context.drawImage(img, 200, 200, 90, 90);
+    }
+}
 
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = brickColour;
-        ctx.fill();
-        ctx.closePath();
+function drawAliens() {
+  for (column = 0; column < alienColumnCount; column++) {
+    for (row = 0; row < alienRowCount; row++) {
+      if (aliens[column][row].status == 1) {
+        var alienX = (column * (alienWidth + alienPadding)) + alienOffsetLeft + alienDx;
+        var alienY = (row * (alienHeight + alienPadding)) + alienOffsetTop + alienDy;
+        setAlienColourAndScore(row);
+
+        aliens[column][row].x = alienX;
+        aliens[column][row].y = alienY;
+        aliens[column][row].score = alienScore;
+
+        // ctx.beginPath();
+        // ctx.rect(alienX, alienY, alienWidth, alienHeight);
+        // ctx.fillStyle = alienColour;
+        // ctx.fill();
+        // ctx.closePath();
+
+        var img = document.createElement('img');
+        img.src = alienImage;
+        ctx.drawImage(img, alienX, alienY, alienWidth, alienHeight);
       }
     }
   }
 }
 
 function collisionDetection() {
-  for (column = 0; column < brickColumnCount; column++) {
-    for (row = 0; row < brickRowCount; row++) {
-      var brick = bricks[column][row];
-      if (brick.status == 1 && ballStatus == 1) {
-        if (x > brick.x && x < brick.x + brickWidth &&
-            y > brick.y && y < brick.y + brickHeight) {
+  for (column = 0; column < alienColumnCount; column++) {
+    for (row = 0; row < alienRowCount; row++) {
+      var alien = aliens[column][row];
+      if (alien.status == 1 && ballStatus == 1) {
+        if (x > alien.x && x < alien.x + alienWidth &&
+            y > alien.y && y < alien.y + alienHeight) {
           ballStatus = 0;
-          brick.status = 0;
-          score += brick.score;
-          numBricksHit++;
-          if (numBricksHit == brickRowCount * brickColumnCount) {
-            setUpBricks();
-            numBricksHit = 0;
+          alien.status = 0;
+          score += alien.score;
+          numAliensHit++;
+          if (numAliensHit == alienRowCount * alienColumnCount) {
+            setUpAliens();
+            numAliensHit = 0;
             y = canvas.height - paddleHeight;
             x = paddleX + (paddleWidth / 2);
             ballSpeed++;
@@ -131,28 +156,31 @@ function updateHighScore() {
 
 function drawScore() {
   ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#0200cc';
+  ctx.fillStyle = '#ffff00';
   ctx.fillText('Score: ' + score, 8, 20);
 }
 
 function drawLives() {
   ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#0200cc';
+  ctx.fillStyle = '#ffff00';
   ctx.fillText('Lives: ' + lives, canvas.width - 140, 20);
 }
 
 function drawHighScore() {
   ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#0200cc';
+  ctx.fillStyle = '#ffff00';
   ctx.fillText('High Score: ' + highScore, canvas.width - 600, 20);
 }
 
 function drawPaddle() {
-  ctx.beginPath();
-  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = '#0200cc';
-  ctx.fill();
-  ctx.closePath();
+  // ctx.beginPath();
+  // ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+  // ctx.fillStyle = '#0200cc';
+  // ctx.fill();
+  // ctx.closePath();
+  var img = document.createElement('img');
+  img.src = 'public/images/cannon.png';
+  ctx.drawImage(img, paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
 }
 
 document.addEventListener('keydown', keyDownHandler, false);
@@ -220,7 +248,7 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawBall();
-  drawBricks();
+  drawAliens();
   drawPaddle();
   drawScore();
   drawLives();
@@ -240,6 +268,8 @@ function draw() {
     paddleX -= 7;
   }
 
+  alienX++;
+  alienY++;
 
   x += dx;
   y += dy;
@@ -247,5 +277,5 @@ function draw() {
   requestAnimationFrame(draw);
 }
 
-setUpBricks();
+setUpAliens();
 draw();
