@@ -1,8 +1,8 @@
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 
-var paddleHeight = 30;
-var paddleWidth = 60;
+var paddleHeight = 20;
+var paddleWidth = 70;
 var paddleX = (canvas.width - paddleWidth) / 2;
 var paddleSpeed = 30;
 
@@ -13,6 +13,7 @@ var dy = -10;
 
 var missileRadius = 5;
 var missileSpeed = 10;
+var gameSpeed = 250;
 
 var rightPressed = false;
 var leftPressed = false;
@@ -42,8 +43,15 @@ var lives = 3;
 
 var aliens = [];
 var missileStatus = 0;
+var alienMissileStatus = 0;
+var missileX;
+var missileY;
+var alienMissileHeight = 10;
 
 function setUpAliens() {
+  alienTopLeftX = alienWidth + 10;
+  alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
+  alienTopLeftY = 10;
   for (column = 0; column < alienColumnCount; column++) {
     aliens[column] = [];
     for (row = 0; row < alienRowCount; row++) {
@@ -83,34 +91,46 @@ function setAlienColourAndScore(row) {
 }
 
 function clearAliens() {
-  ctx.clearRect(10, 10,  canvas.width, alienRowCount * (alienHeight + alienPadding));
+  ctx.clearRect(10, 10, canvas.width, alienRowCount *
+    (alienHeight + alienPadding));
 }
 
 function drawAliens() {
   clearAliens();
-  alienTopLeftX += alienDx
-  alienTopRightX = alienTopLeftX + alienColumnCount * (alienWidth + alienPadding);
-  if ((alienTopLeftX < alienWidth) || (alienTopRightX >  (canvas.width - alienWidth))) {
-    //alienTopLeftY -= alienDx
+  alienTopLeftX += alienDx;
+  alienTopRightX = alienTopLeftX + alienColumnCount *
+                    (alienWidth + alienPadding);
+  if ((alienTopLeftX < alienWidth) ||
+    (alienTopRightX > (canvas.width - alienWidth))) {
     alienDx = -alienDx;
     alienTopLeftY += alienDy;
   } else {
-    console.log(alienTopLeftX)   
+    //console.log(alienTopLeftX);
   }
+
+  var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
+  //console.log('Firing Column :' + columnToFireFrom);
+  //console.log('Alien Missile Status :' + alienMissileStatus);
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
       if (aliens[column][row].status == 1) {
-        var alienX = (column * (alienWidth + alienPadding)) + alienOffsetLeft + alienTopLeftX;
-        var alienY = (row * (alienHeight + alienPadding)) + alienOffsetTop + alienTopLeftY;
-        
+        var alienX = (column * (alienWidth + alienPadding)) +
+                      alienOffsetLeft + alienTopLeftX;
+        var alienY = (row * (alienHeight + alienPadding)) +
+                      alienOffsetTop + alienTopLeftY;
         setAlienColourAndScore(row);
 
         aliens[column][row].x = alienX;
         aliens[column][row].y = alienY;
         aliens[column][row].score = alienScore;
+        if ((alienMissileStatus === 0) && (row === columnToFireFrom) &&
+            (aliens[column][row].status == 1)) {
+          console.log('Alien [' + column + '][' + row + '] is firing');
+          fireAlienMissile(alienX, alienY);
+        }
 
         if (alienY >= (canvas.height - alienHeight)) {
-          alienDy = 0
+          alienDy = 0;
         }
         var img = document.createElement('img');
         img.src = alienImage;
@@ -137,13 +157,17 @@ function collisionDetection() {
             y = canvas.height - paddleHeight;
             x = paddleX + (paddleWidth / 2);
             missileSpeed++;
+            gameSpeed -= 10;
           }
         }
       }
-      if (alien.status == 1 ) {
+      if (alien.status == 1) {
         if (alien.x >= paddleX && alien.x <= (paddleX + paddleWidth) &&
-           alien.y >= (canvas.height - paddleHeight)) {
-          lives--;
+           (alien.y + alienHeight) >= (canvas.height - paddleHeight)) {
+          alert('GAME OVER - The Aliens Have Landed');
+          location.reload();
+          //lives--;
+          //setInterval(draw, 500);
         }
       }
     }
@@ -186,7 +210,8 @@ function drawHighScore() {
 function drawPaddle() {
   var img = document.createElement('img');
   img.src = 'public/images/cannon.png';
-  ctx.drawImage(img, paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+  ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
+    paddleWidth, paddleHeight);
 }
 
 document.addEventListener('keydown', keyDownHandler, false);
@@ -202,7 +227,7 @@ function keyDownHandler(e) {
   }
   else if (e.keyCode == 32) {
     firePressed = true;
-    console.log("Fire button pressed");
+    //console.log('Fire button pressed');
     if (missileStatus !== 1) {
       fire();
     }
@@ -216,7 +241,7 @@ function keyUpHandler(e) {
   else if (e.keyCode == 37) {
     leftPressed = false;
   }
-  else if (e.keyCode == 32){
+  else if (e.keyCode == 32) {
     firePressed = false;
   }
 }
@@ -228,17 +253,45 @@ function mouseMoveHandler(e) {
   }
 }
 
+function fireAlienMissile(alienX, alienY) {
+  alienMissileStatus = 1;
+  missileX = alienX + (alienWidth / 2);
+  missileY = alienY + alienHeight;
+}
+
+function drawAlienMissile() {
+  if (alienMissileStatus === 1) {
+    ctx.beginPath();
+    ctx.rect(missileX, missileY, 2, alienMissileHeight);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.closePath();
+  }
+}
+
+function eraseAlienMissile() {
+  alienMissileStatus = 0;
+}
+
+function hitByAlien() {
+  if (((missileY + alienMissileHeight) >= (canvas.height)) &&
+    (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) { 
+    console.log("HIT!!!!!!");
+    eraseAlienMissile();
+    return true;
+  }
+}
+
 function fire() {
   missileStatus = 1;
-  x = paddleX + (paddleWidth / 2);
+  x = paddleX + (paddleWidth / 2) - 2;
   y = canvas.height - (paddleHeight + 2);
 }
 
 function drawMissile() {
   if (missileStatus === 1) {
-    console.log('Drawing missile at:', x - 2, y - 40);
     ctx.beginPath();
-    ctx.rect(x, y, 5, 20);
+    ctx.rect(x, y, 2, 10);
     ctx.fillStyle = '#ffff00';
     ctx.fill();
     ctx.closePath();
@@ -247,19 +300,26 @@ function drawMissile() {
 
 function eraseMissile() {
   missileStatus = 0;
-  x = paddleX + (paddleWidth / 2); ;
+  x = paddleX + (paddleWidth / 2);
   y = canvas.height - (paddleHeight + 2);
+}
+
+function drawPlayerExplosion() {
+  var img = document.createElement('img');
+  img.src = 'public/images/alien_hit.png';
+  ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
+    paddleWidth, paddleHeight);
+}
+
+function drawAlienExplosion() {
+
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  if (lives === 0) {
-    alert("Game Over");
-    newGame();
-  }
-
   drawMissile();
+  drawAlienMissile();
   drawAliens();
   drawPaddle();
   drawScore();
@@ -268,9 +328,24 @@ function draw() {
   drawHighScore();
 
   collisionDetection();
+  if (hitByAlien() == true) {
+    lives--;
+    drawLives();
+    drawPlayerExplosion();
+  }
+
+  if (lives === 0) {
+    alert('Game Over');
+    //newGame();
+    location.reload();
+  }
 
   if (y <= 0) {
     eraseMissile();
+  }
+
+  if (missileY >= canvas.height) {
+    eraseAlienMissile();
   }
 
   if (rightPressed && paddleX < canvas.width - paddleWidth) {
@@ -282,6 +357,7 @@ function draw() {
 
   x += dx;
   y += dy;
+  missileY += 5;
 
   //requestAnimationFrame(draw);
   //alienTopLeftX += alienDx;
@@ -294,10 +370,8 @@ var newGame = function () {
   lives = 3;
   score = 0;
   setUpAliens();
-  setInterval(draw, 250);
+  setInterval(draw, gameSpeed);
   //draw();
-}
+};
 
-newGame()
-
-
+newGame();
