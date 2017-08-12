@@ -29,6 +29,7 @@ var alienOffsetLeft = 15;
 var alienColour;
 var alienScore;
 var alienImage;
+var alienHit = null;
 
 var alienTopLeftX = alienWidth + 10;
 var alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
@@ -96,13 +97,12 @@ function clearAliens() {
 }
 
 function checkAlienFirstInColumn(row,column) {
-  console.log("Checking column: ", column);
+  //console.log("Checking column: ", column);
   var isHead = true;
   for (var i = 0; i < 5; i++) {
-    console.log('alien [' + column + ',' + i + '] is ' +  aliens[column][i].status);
+    //console.log('alien [' + column + ',' + i + '] is ' +  aliens[column][i].status);
     if (aliens[column][i].status === 1 && i > row) {
-      console.log('alien [' + column + ',' + i + '] is alive');
-      //isHead == false;
+      //console.log('alien [' + column + ',' + i + '] is alive');
       return false;
     }
   }
@@ -141,9 +141,7 @@ function drawAliens() {
         if (aliens[column][row].status == 1 &&
           (alienMissileStatus === 0) && (column === columnToFireFrom) &&
           checkAlienFirstInColumn(row, column) === true) {
-          //if (row === 4 || ((row < 4) && aliens[column][row + 1].status === 0)) {
-
-            console.log('Alien [' + column + '][' + row + '] is firing');
+            //console.log('Alien [' + column + '][' + row + '] is firing');
             fireAlienMissile(aliens[column][row]);
         }
         if (alienY >= (canvas.height - alienHeight)) {
@@ -168,6 +166,7 @@ function collisionDetection() {
           alien.status = 0;
           score += alien.score;
           numAliensHit++;
+          alienHit = alien;
           if (numAliensHit == alienRowCount * alienColumnCount) {
             setUpAliens();
             numAliensHit = 0;
@@ -325,13 +324,17 @@ function drawPlayerExplosion() {
   ctx.clearRect(paddleX, canvas.height - paddleHeight,
     paddleWidth, paddleHeight);
   var img = document.createElement('img');
-  img.src = 'public/images/alien_hit.png';
+  img.src = 'public/images/explosion.png';
   ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
     paddleWidth, paddleHeight);
 }
 
 function drawAlienExplosion() {
-
+  ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
+  var img = document.createElement('img');
+  img.src = 'public/images/explosion.png';
+  ctx.drawImage(img, alienHit.x, alienHit.y, alienWidth, alienHeight);
+  alienHit = null;
 }
 
 function draw() {
@@ -351,6 +354,10 @@ function draw() {
     lives--;
     drawLives();
     drawPlayerExplosion();
+  }
+
+  if (alienHit != null) {
+    drawAlienExplosion();
   }
 
   if (lives === 0) {
