@@ -302,6 +302,8 @@ function fire() {
   missileStatus = 1;
   x = paddleX + (paddleWidth / 2) - 2;
   y = canvas.height - (paddleHeight + 2);
+  var audio = new Audio('public/sounds/shoot.wav');
+  audio.play();
 }
 
 function drawMissile() {
@@ -327,6 +329,8 @@ function drawPlayerExplosion() {
   img.src = 'public/images/explosion.png';
   ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
     paddleWidth, paddleHeight);
+  var audio = new Audio('public/sounds/explosion.wav');
+  audio.play();
 }
 
 function drawAlienExplosion() {
@@ -335,6 +339,8 @@ function drawAlienExplosion() {
   img.src = 'public/images/explosion.png';
   ctx.drawImage(img, alienHit.x, alienHit.y, alienWidth, alienHeight);
   alienHit = null;
+  var audio = new Audio('public/sounds/invaderkilled.wav');
+  audio.play();
 }
 
 function draw() {
