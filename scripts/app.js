@@ -13,7 +13,7 @@ var dy = -10;
 
 var missileRadius = 5;
 var missileSpeed = 10;
-var gameSpeed = 250;
+var gameSpeed = 200;
 
 var rightPressed = false;
 var leftPressed = false;
@@ -95,6 +95,20 @@ function clearAliens() {
     (alienHeight + alienPadding));
 }
 
+function checkAlienFirstInColumn(row,column) {
+  console.log("Checking column: ", column);
+  var isHead = true;
+  for (var i = 0; i < 5; i++) {
+    console.log('alien [' + column + ',' + i + '] is ' +  aliens[column][i].status);
+    if (aliens[column][i].status === 1 && i > row) {
+      console.log('alien [' + column + ',' + i + '] is alive');
+      //isHead == false;
+      return false;
+    }
+  }
+  return isHead;
+}
+
 function drawAliens() {
   clearAliens();
   alienTopLeftX += alienDx;
@@ -123,12 +137,15 @@ function drawAliens() {
         aliens[column][row].x = alienX;
         aliens[column][row].y = alienY;
         aliens[column][row].score = alienScore;
-        if ((alienMissileStatus === 0) && (row === columnToFireFrom) &&
-            (aliens[column][row].status == 1)) {
-          console.log('Alien [' + column + '][' + row + '] is firing');
-          fireAlienMissile(alienX, alienY);
-        }
 
+        if (aliens[column][row].status == 1 &&
+          (alienMissileStatus === 0) && (column === columnToFireFrom) &&
+          checkAlienFirstInColumn(row, column) === true) {
+          //if (row === 4 || ((row < 4) && aliens[column][row + 1].status === 0)) {
+
+            console.log('Alien [' + column + '][' + row + '] is firing');
+            fireAlienMissile(aliens[column][row]);
+        }
         if (alienY >= (canvas.height - alienHeight)) {
           alienDy = 0;
         }
@@ -253,10 +270,10 @@ function mouseMoveHandler(e) {
   }
 }
 
-function fireAlienMissile(alienX, alienY) {
+function fireAlienMissile(alien) {
   alienMissileStatus = 1;
-  missileX = alienX + (alienWidth / 2);
-  missileY = alienY + alienHeight;
+  missileX = alien.x + (alienWidth / 2);
+  missileY = alien.y + alienHeight;
 }
 
 function drawAlienMissile() {
@@ -275,7 +292,7 @@ function eraseAlienMissile() {
 
 function hitByAlien() {
   if (((missileY + alienMissileHeight) >= (canvas.height)) &&
-    (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) { 
+    (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) {
     console.log("HIT!!!!!!");
     eraseAlienMissile();
     return true;
@@ -305,6 +322,8 @@ function eraseMissile() {
 }
 
 function drawPlayerExplosion() {
+  ctx.clearRect(paddleX, canvas.height - paddleHeight,
+    paddleWidth, paddleHeight);
   var img = document.createElement('img');
   img.src = 'public/images/alien_hit.png';
   ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
