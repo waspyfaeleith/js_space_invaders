@@ -96,13 +96,10 @@ function clearAliens() {
     (alienHeight + alienPadding));
 }
 
-function checkAlienFirstInColumn(row,column) {
-  //console.log("Checking column: ", column);
+function checkAlienFirstInColumn(row, column) {
   var isHead = true;
   for (var i = 0; i < 5; i++) {
-    //console.log('alien [' + column + ',' + i + '] is ' +  aliens[column][i].status);
     if (aliens[column][i].status === 1 && i > row) {
-      //console.log('alien [' + column + ',' + i + '] is alive');
       return false;
     }
   }
@@ -118,13 +115,9 @@ function drawAliens() {
     (alienTopRightX > (canvas.width - alienWidth))) {
     alienDx = -alienDx;
     alienTopLeftY += alienDy;
-  } else {
-    //console.log(alienTopLeftX);
   }
 
   var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
-  //console.log('Firing Column :' + columnToFireFrom);
-  //console.log('Alien Missile Status :' + alienMissileStatus);
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
       if (aliens[column][row].status == 1) {
@@ -141,7 +134,6 @@ function drawAliens() {
         if (aliens[column][row].status == 1 &&
           (alienMissileStatus === 0) && (column === columnToFireFrom) &&
           checkAlienFirstInColumn(row, column) === true) {
-            //console.log('Alien [' + column + '][' + row + '] is firing');
             fireAlienMissile(aliens[column][row]);
         }
         if (alienY >= (canvas.height - alienHeight)) {
@@ -167,6 +159,7 @@ function collisionDetection() {
           score += alien.score;
           numAliensHit++;
           alienHit = alien;
+          console.log('ALIEN HIT!!!!!!', alienHit);
           if (numAliensHit == alienRowCount * alienColumnCount) {
             setUpAliens();
             numAliensHit = 0;
@@ -182,8 +175,6 @@ function collisionDetection() {
            (alien.y + alienHeight) >= (canvas.height - paddleHeight)) {
           alert('GAME OVER - The Aliens Have Landed');
           location.reload();
-          //lives--;
-          //setInterval(draw, 500);
         }
       }
     }
@@ -243,7 +234,6 @@ function keyDownHandler(e) {
   }
   else if (e.keyCode == 32) {
     firePressed = true;
-    //console.log('Fire button pressed');
     if (missileStatus !== 1) {
       fire();
     }
@@ -292,7 +282,7 @@ function eraseAlienMissile() {
 function hitByAlien() {
   if (((missileY + alienMissileHeight) >= (canvas.height)) &&
     (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) {
-    console.log("HIT!!!!!!");
+    console.log('HIT!!!!!!');
     eraseAlienMissile();
     return true;
   }
@@ -307,6 +297,7 @@ function fire() {
 }
 
 function drawMissile() {
+  console.log(missileStatus);
   if (missileStatus === 1) {
     ctx.beginPath();
     ctx.rect(x, y, 2, 10);
@@ -317,6 +308,7 @@ function drawMissile() {
 }
 
 function eraseMissile() {
+  console.log('erasing missile');
   missileStatus = 0;
   x = paddleX + (paddleWidth / 2);
   y = canvas.height - (paddleHeight + 2);
@@ -338,15 +330,15 @@ function drawAlienExplosion() {
   var img = document.createElement('img');
   img.src = 'public/images/explosion.png';
   ctx.drawImage(img, alienHit.x, alienHit.y, alienWidth, alienHeight);
-  alienHit = null;
   var audio = new Audio('public/sounds/invaderkilled.wav');
   audio.play();
+  alienHit = null;
 }
 
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawMissile();
+  //drawMissile();
   drawAlienMissile();
   drawAliens();
   drawPaddle();
@@ -356,6 +348,7 @@ function draw() {
   drawHighScore();
 
   collisionDetection();
+
   if (hitByAlien() == true) {
     lives--;
     drawLives();
@@ -364,16 +357,18 @@ function draw() {
 
   if (alienHit != null) {
     drawAlienExplosion();
+    alienHit = null;
   }
 
   if (lives === 0) {
     alert('Game Over');
-    //newGame();
     location.reload();
   }
 
-  if (y <= 0) {
+  if (y <= 10) {
     eraseMissile();
+  } else {
+    drawMissile();
   }
 
   if (missileY >= canvas.height) {
@@ -392,10 +387,6 @@ function draw() {
   missileY += 5;
 
   //requestAnimationFrame(draw);
-  //alienTopLeftX += alienDx;
-  //console.log("topLeft: ", alienTopLeftX);
-  //console.log("topRight: ", alienTopRightX);
-  //setInterval(drawAliens, 300);
 }
 
 var newGame = function () {
@@ -403,7 +394,6 @@ var newGame = function () {
   score = 0;
   setUpAliens();
   setInterval(draw, gameSpeed);
-  //draw();
 };
 
 newGame();
