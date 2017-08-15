@@ -37,6 +37,13 @@ var alienTopLeftY = 10;
 var alienDx = -5;
 var alienDy = alienHeight / 2;
 
+var alienSpaceShipStatus = 0;
+var alienSpaceShipDx = 10;
+var alienSpaceShipHeight = 40;
+var alienSpaceShipWidth = 70;
+var alienSpaceShipX = alienSpaceShipWidth;
+var alienSpaceShipY = alienSpaceShipHeight - 10;
+
 var highScore;
 var score = 0;
 var numAliensHit = 0;
@@ -51,6 +58,9 @@ var alienMissileHeight = 10;
 
 var imgAlienExplosion = document.createElement('img');
 imgAlienExplosion.src = 'public/images/explosion.png';
+
+var imgAlienSpaceShip = document.createElement('img');
+imgAlienSpaceShip.src = 'public/images/space_invaders_ship_red.png';
 
 function setUpAliens() {
   alienTopLeftX = alienWidth + 10;
@@ -107,6 +117,17 @@ function checkAlienFirstInColumn(row, column) {
     }
   }
   return isHead;
+}
+
+function drawAlienSpaceShip() {
+  alienSpaceShipX += alienSpaceShipDx;
+  if (alienSpaceShipX <= canvas.width || alienSpaceShipX <= 0) {
+    console.log('drawing ' + imgAlienSpaceShip + 'at ' + alienSpaceShipX, alienSpaceShipY);
+    ctx.drawImage(imgAlienSpaceShip, alienSpaceShipX, alienSpaceShipY,
+    alienSpaceShipWidth, alienSpaceShipHeight);
+  } else {
+    alienSpaceShipDx = -alienSpaceShipDx;
+  }
 }
 
 function drawAliens() {
@@ -342,6 +363,7 @@ function draw() {
   //drawMissile();
   drawAlienMissile();
   drawAliens();
+    drawAlienSpaceShip();
   drawPaddle();
   drawScore();
   drawLives();
