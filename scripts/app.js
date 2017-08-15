@@ -49,6 +49,9 @@ var missileX;
 var missileY;
 var alienMissileHeight = 10;
 
+var imgAlienExplosion = document.createElement('img');
+imgAlienExplosion.src = 'public/images/explosion.png';
+
 function setUpAliens() {
   alienTopLeftX = alienWidth + 10;
   alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
@@ -159,7 +162,6 @@ function collisionDetection() {
           score += alien.score;
           numAliensHit++;
           alienHit = alien;
-          console.log('ALIEN HIT!!!!!!', alienHit);
           if (numAliensHit == alienRowCount * alienColumnCount) {
             setUpAliens();
             numAliensHit = 0;
@@ -174,7 +176,7 @@ function collisionDetection() {
         if (alien.x >= paddleX && alien.x <= (paddleX + paddleWidth) &&
            (alien.y + alienHeight) >= (canvas.height - paddleHeight)) {
           alert('GAME OVER - The Aliens Have Landed');
-          location.reload();
+          gameOver();
         }
       }
     }
@@ -327,9 +329,8 @@ function drawPlayerExplosion() {
 
 function drawAlienExplosion() {
   ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
-  var img = document.createElement('img');
-  img.src = 'public/images/explosion.png';
-  ctx.drawImage(img, alienHit.x, alienHit.y, alienWidth, alienHeight);
+  console.log('ALIEN HIT!!!!!!', alienHit);
+  ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
   var audio = new Audio('public/sounds/invaderkilled.wav');
   audio.play();
   alienHit = null;
@@ -395,5 +396,9 @@ var newGame = function () {
   setUpAliens();
   setInterval(draw, gameSpeed);
 };
+
+var gameOver = function() {
+  location.reload();
+}
 
 newGame();
