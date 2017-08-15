@@ -379,13 +379,14 @@ function drawPlayerExplosion() {
 }
 
 function drawAlienExplosion() {
-  ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
   console.log('ALIEN HIT!!!!!!', alienHit);
   if (alienHit === alienSpaceShip) {
     ctx.font = '16px ZX-Spectrum';
-    ctx.fillStyle = '#ffff00';
-    ctx.fillText(alienSpaceShip.score, alienSpaceShip.x, alienSpaceShip.y);
+    ctx.fillStyle = '#ff0000';
+    ctx.clearRect(alienSpaceShip.x, alienSpaceShip.y , alienSpaceShipWidth, alienSpaceShipHeight);
+    ctx.fillText(alienSpaceShip.score, alienSpaceShip.x, alienSpaceShip.y + alienSpaceShipHeight);
   } else {
+    ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
     ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
   }
   var audio = new Audio('public/sounds/invaderkilled.wav');
@@ -396,7 +397,7 @@ function drawAlienExplosion() {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  //drawMissile();
+  drawMissile();
   drawAlienMissile();
   drawAliens();
   drawPaddle();
@@ -423,7 +424,7 @@ function draw() {
   if (alienSpaceShip.status === 0) {
     setUpAlienSpaceShip();
   }
-  
+
   if (lives === 0) {
     alert('Game Over');
     gameOver();
