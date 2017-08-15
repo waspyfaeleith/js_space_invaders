@@ -423,18 +423,7 @@ function draw() {
   if (alienSpaceShip.status === 0) {
     setUpAlienSpaceShip();
   }
-  // if (alienSpaceShip.status === 1) {
-  //   console.log("WORK YA BASTARD!!");
-  //   drawAlienSpaceShip();
-  // }
-  // console.log('alienSpaceShip.status:',alienSpaceShip.status);
-  // if (alienSpaceShip.status === 0) {
-  //   setUpAlienSpaceShip();
-  //   console.log('alienshipstatus:', alienSpaceShip.status);
-  // } else {
-  //   drawAlienSpaceShip();
-  // }
-
+  
   if (lives === 0) {
     alert('Game Over');
     gameOver();
