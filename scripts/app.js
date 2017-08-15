@@ -37,6 +37,7 @@ var alienTopLeftY = 10;
 var alienDx = -5;
 var alienDy = alienHeight / 2;
 
+var alienSpaceShip;
 var alienSpaceShipStatus = 0;
 var alienSpaceShipDx = 10;
 var alienSpaceShipHeight = 40;
@@ -63,6 +64,7 @@ var imgAlienSpaceShip = document.createElement('img');
 imgAlienSpaceShip.src = 'public/images/space_invaders_ship_red.png';
 
 function setUpAliens() {
+  alienSpaceShip = { x: 0, y: 0, status: 1, score: 800 };
   alienTopLeftX = alienWidth + 10;
   alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
   alienTopLeftY = 10;
@@ -120,13 +122,27 @@ function checkAlienFirstInColumn(row, column) {
 }
 
 function drawAlienSpaceShip() {
-  alienSpaceShipX += alienSpaceShipDx;
-  if (alienSpaceShipX <= canvas.width || alienSpaceShipX <= 0) {
-    console.log('drawing ' + imgAlienSpaceShip + 'at ' + alienSpaceShipX, alienSpaceShipY);
-    ctx.drawImage(imgAlienSpaceShip, alienSpaceShipX, alienSpaceShipY,
-    alienSpaceShipWidth, alienSpaceShipHeight);
-  } else {
-    alienSpaceShipDx = -alienSpaceShipDx;
+  if (alienSpaceShip.status == 1) {
+    alienSpaceShipX += alienSpaceShipDx;
+    if (alienSpaceShipX <= canvas.width && alienSpaceShipX >= 0) {
+      ctx.drawImage(imgAlienSpaceShip, alienSpaceShipX, alienSpaceShipY,
+        alienSpaceShipWidth, alienSpaceShipHeight);
+    } else {
+      alienSpaceShipDx = -alienSpaceShipDx;
+    }
+  }
+}
+
+function checkIfAlienSpaceShipHit() {
+  if (alienSpaceShip.status == 1 && missileStatus == 1) {
+    if (x > alienSpaceShip.x && x < alienSpaceShip.x + alienSpaceShipWidth &&
+        y > alienSpaceShip.y && y < alienSpaceShip.y + alienSpaceShipHeight) {
+          console.log('ALIEN SHIP HIT');
+          missileStatus = 0;
+          alienSpaceShip.status = 0;
+          score += alienSpaceShip.score;
+          alienHit = alienSpaceShip;
+        }
   }
 }
 
@@ -351,7 +367,13 @@ function drawPlayerExplosion() {
 function drawAlienExplosion() {
   ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
   console.log('ALIEN HIT!!!!!!', alienHit);
-  ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
+  if (alienHit === alienSpaceShip) {
+    ctx.font = '16px ZX-Spectrum';
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText(alienSpaceShip.score, alienSpaceShip.x, alienSpaceShip.y);
+  } else {
+    ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
+  }
   var audio = new Audio('public/sounds/invaderkilled.wav');
   audio.play();
   alienHit = null;
@@ -371,6 +393,7 @@ function draw() {
   drawHighScore();
 
   collisionDetection();
+  checkIfAlienSpaceShipHit();
 
   if (hitByAlien() == true) {
     lives--;
@@ -385,7 +408,7 @@ function draw() {
 
   if (lives === 0) {
     alert('Game Over');
-    location.reload();
+    gameOver();
   }
 
   if (y <= 10) {
