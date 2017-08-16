@@ -1,10 +1,11 @@
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
+var req;
 
 var paddleHeight = 20;
 var paddleWidth = 70;
 var paddleX = (canvas.width - paddleWidth) / 2;
-var paddleSpeed = 30;
+var paddleSpeed = 10;
 
 var x = canvas.width / 2;
 var y = canvas.height - (paddleHeight + 2);
@@ -12,7 +13,7 @@ var dx = 0;
 var dy = -10;
 
 var missileRadius = 5;
-var missileSpeed = 10;
+var missileSpeed = 5;
 var gameSpeed = 200;
 
 var rightPressed = false;
@@ -34,11 +35,11 @@ var alienHit = null;
 var alienTopLeftX = alienWidth + 10;
 var alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
 var alienTopLeftY = 10;
-var alienDx = -5;
+var alienDx = -1;
 var alienDy = alienHeight / 2;
 
 var alienSpaceShipStatus = 0;
-var alienSpaceShipDx = 15;
+var alienSpaceShipDx = 1;
 var alienSpaceShipHeight = 40;
 var alienSpaceShipWidth = 70;
 var alienSpaceShipX = alienSpaceShipWidth;
@@ -83,10 +84,10 @@ function setUpAlienSpaceShip() {
     console.log('direction:', direction);
     if (direction === 1) {
       alienSpaceShip.x = canvas.width - alienSpaceShipWidth;
-      alienSpaceShipDx = -15;
+      alienSpaceShipDx = -2;
     } else {
       alienSpaceShip.x = alienSpaceShipWidth;
-      alienSpaceShipDx = 15;
+      alienSpaceShipDx = 2;
     }
   }
 }
@@ -138,6 +139,8 @@ function checkAlienFirstInColumn(row, column) {
 
 function drawAlienSpaceShip() {
   if (alienSpaceShip.status === 1) {
+    //var audio = new Audio('public/sounds/ufo_lowpitch.wav');
+    //audio.play();
     alienSpaceShip.x += alienSpaceShipDx;
     if (alienSpaceShip.x <= canvas.width && alienSpaceShip.x >= 0) {
       ctx.drawImage(imgAlienSpaceShip, alienSpaceShip.x, alienSpaceShip.y,
@@ -174,6 +177,8 @@ function drawAliens() {
   }
 
   var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
+  var audio = new Audio('public/sounds/fastinvader1.wav');
+  audio.play();
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
       if (aliens[column][row].status == 1) {
@@ -426,7 +431,7 @@ function draw() {
   }
 
   if (lives === 0) {
-    alert('Game Over');
+    //alert('Game Over');
     gameOver();
   }
 
@@ -449,21 +454,25 @@ function draw() {
 
   x += dx;
   y += dy;
-  missileY += 5;
+  missileY += 1;
 
-  //requestAnimationFrame(draw);
+  req = requestAnimationFrame(draw);
 }
+
 
 var newGame = function () {
   lives = 3;
   score = 0;
   setUpAliens();
   setUpAlienSpaceShip();
-  setInterval(draw, gameSpeed);
+  //setInterval(draw, gameSpeed);
+  req = requestAnimationFrame(draw);
 };
 
 var gameOver = function() {
-  clearInterval(draw);
+  //clearInterval(draw);
+  alert('Game Over');
+  window.cancelAnimationFrame(req);
   location.reload();
 }
 
