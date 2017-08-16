@@ -77,7 +77,7 @@ function setUpAliens() {
 }
 
 function setUpAlienSpaceShip() {
-  var isGoingToLaunch = Math.floor(Math.random() * 20);
+  var isGoingToLaunch = Math.floor(Math.random() * 1000);
   if (isGoingToLaunch === 10) {
     var direction = Math.floor(Math.random() * 2);
     alienSpaceShip = { x: alienSpaceShipX, y: alienSpaceShipY, status: 1, score: 800 };
