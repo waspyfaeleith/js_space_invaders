@@ -21,7 +21,7 @@ var leftPressed = false;
 var firePressed = false;
 
 var alienRowCount = 5;
-var alienColumnCount = 12;
+var alienColumnCount = 11;
 var alienWidth = 40;
 var alienHeight = 30;
 var alienPadding = 15;
@@ -50,6 +50,7 @@ var highScore;
 var score = 0;
 var numAliensHit = 0;
 var lives = 3;
+var lifeAdded = false;
 
 var aliens = [];
 var missileStatus = 0;
@@ -76,11 +77,34 @@ function setUpAliens() {
   }
 }
 
+function getAlienShipScore() {
+  var factor = Math.floor(Math.random() * 4);
+  var score;
+  switch (factor) {
+    case 1:
+      score = 50;
+      break;
+    case 2:
+      score = 100;
+      break;
+    case 3:
+      score = 150;
+      break;
+    case 4:
+      score = 300;
+      break;
+    default:
+      score = 100;
+  }
+  return score;
+}
+
 function setUpAlienSpaceShip() {
   var isGoingToLaunch = Math.floor(Math.random() * 1000);
   if (isGoingToLaunch === 10) {
     var direction = Math.floor(Math.random() * 2);
-    alienSpaceShip = { x: alienSpaceShipX, y: alienSpaceShipY, status: 1, score: 800 };
+    var shipScore = getAlienShipScore();
+    alienSpaceShip = { x: alienSpaceShipX, y: alienSpaceShipY, status: 1, score: shipScore };
     console.log('direction:', direction);
     if (direction === 1) {
       alienSpaceShip.x = canvas.width - alienSpaceShipWidth;
@@ -95,22 +119,22 @@ function setUpAlienSpaceShip() {
 function setAlienColourAndScore(row) {
   switch (row) {
     case 0:
-      alienScore = 50;
+      alienScore = 30;
       alienColour = '#0200cc';
       alienImage = 'public/images/invader_3.png';
       break;
     case 1:
-      alienScore = 40;
+      alienScore = 20;
       alienColour = '#ff0002';
       alienImage = 'public/images/invader_2.png';
       break;
     case 2:
-      alienScore = 30;
+      alienScore = 20;
       alienColour = '#00ff03';
       alienImage = 'public/images/invader_2.png';
       break;
     case 3:
-      alienScore = 20;
+      alienScore = 10;
       alienColour = '#01fffe';
       alienImage = 'public/images/invader_1.png';
       break;
@@ -208,6 +232,14 @@ function drawAliens() {
   }
 }
 
+function addLifeIfRequired() {
+  if (score >= 1000 && lifeAdded === false) {
+    lives++;
+    drawLives();
+    lifeAdded = true;
+  }
+}
+
 function collisionDetection() {
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
@@ -218,6 +250,7 @@ function collisionDetection() {
           missileStatus = 0;
           alien.status = 0;
           score += alien.score;
+          addLifeIfRequired();
           numAliensHit++;
           alienHit = alien;
           if (numAliensHit == alienRowCount * alienColumnCount) {
