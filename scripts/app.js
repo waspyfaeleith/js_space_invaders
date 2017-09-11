@@ -201,8 +201,6 @@ function drawAliens() {
   }
 
   var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
-  var audio = new Audio('public/sounds/fastinvader1.wav');
-  audio.play();
   for (column = 0; column < alienColumnCount; column++) {
     for (row = 0; row < alienRowCount; row++) {
       if (aliens[column][row].status == 1) {
@@ -432,12 +430,30 @@ function drawAlienExplosion() {
   alienHit = null;
 }
 
+function playAlienMoveSound(id) {
+  var audio;
+  if (id === 0) {
+    audio = new Audio('public/sounds/fastinvader1.wav');
+  } else {
+    audio = new Audio('public/sounds/fastinvader2.wav');
+  }
+  audio.play();
+}
+
+var count = 0;
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   drawMissile();
   drawAlienMissile();
   drawAliens();
+
+  if (count % 100 === 0) {
+    playAlienMoveSound(0);
+  } else if (count % 50 === 0) {
+    playAlienMoveSound(1);
+  }
+
   drawPaddle();
   drawScore();
   drawLives();
@@ -490,6 +506,7 @@ function draw() {
   missileY += 1;
 
   req = requestAnimationFrame(draw);
+  count++;
 }
 
 
@@ -506,7 +523,8 @@ var gameOver = function() {
   //clearInterval(draw);
   alert('Game Over');
   window.cancelAnimationFrame(req);
-  location.reload();
+  //location.reload();
+  cancelAnimationFrame(globalID);
 }
 
 newGame();
