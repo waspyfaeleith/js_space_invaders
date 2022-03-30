@@ -66,250 +66,250 @@ var imgAlienSpaceShip = document.createElement('img');
 imgAlienSpaceShip.src = 'public/images/space_invaders_ship_red.png';
 
 function setUpAliens() {
-  alienTopLeftX = alienWidth + 10;
-  alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
-  alienTopLeftY = 10;
-  for (column = 0; column < alienColumnCount; column++) {
-    aliens[column] = [];
-    for (row = 0; row < alienRowCount; row++) {
-      aliens[column][row] = { x: 0, y: 0, status: 1, score: 1 };
+    alienTopLeftX = alienWidth + 10;
+    alienTopRightX = alienColumnCount * (alienWidth + alienPadding);
+    alienTopLeftY = 10;
+    for (column = 0; column < alienColumnCount; column++) {
+        aliens[column] = [];
+        for (row = 0; row < alienRowCount; row++) {
+            aliens[column][row] = { x: 0, y: 0, status: 1, score: 1 };
+        }
     }
-  }
 }
 
 function getAlienShipScore() {
-  var factor = Math.floor(Math.random() * 4);
-  var score;
-  switch (factor) {
-    case 1:
-      score = 50;
-      break;
-    case 2:
-      score = 100;
-      break;
-    case 3:
-      score = 150;
-      break;
-    case 4:
-      score = 300;
-      break;
-    default:
-      score = 100;
-  }
-  return score;
+    var factor = Math.floor(Math.random() * 4);
+    var score;
+    switch (factor) {
+        case 1:
+            score = 50;
+            break;
+        case 2:
+            score = 100;
+            break;
+        case 3:
+            score = 150;
+            break;
+        case 4:
+            score = 300;
+            break;
+        default:
+            score = 100;
+    }
+    return score;
 }
 
 function setUpAlienSpaceShip() {
-  var isGoingToLaunch = Math.floor(Math.random() * 1000);
-  if (isGoingToLaunch === 10) {
-    var direction = Math.floor(Math.random() * 2);
-    var shipScore = getAlienShipScore();
-    alienSpaceShip = { x: alienSpaceShipX, y: alienSpaceShipY, status: 1, score: shipScore };
-    console.log('direction:', direction);
-    if (direction === 1) {
-      alienSpaceShip.x = canvas.width - alienSpaceShipWidth;
-      alienSpaceShipDx = -2;
-    } else {
-      alienSpaceShip.x = alienSpaceShipWidth;
-      alienSpaceShipDx = 2;
+    var isGoingToLaunch = Math.floor(Math.random() * 1000);
+    if (isGoingToLaunch === 10) {
+        var direction = Math.floor(Math.random() * 2);
+        var shipScore = getAlienShipScore();
+        alienSpaceShip = { x: alienSpaceShipX, y: alienSpaceShipY, status: 1, score: shipScore };
+        //console.log('direction:', direction);
+        if (direction === 1) {
+            alienSpaceShip.x = canvas.width - alienSpaceShipWidth;
+            alienSpaceShipDx = -2;
+        } else {
+            alienSpaceShip.x = alienSpaceShipWidth;
+            alienSpaceShipDx = 2;
+        }
     }
-  }
 }
 
 function setAlienColourAndScore(row) {
-  switch (row) {
-    case 0:
-      alienScore = 30;
-      alienColour = '#0200cc';
-      alienImage = 'public/images/invader_3.png';
-      break;
-    case 1:
-      alienScore = 20;
-      alienColour = '#ff0002';
-      alienImage = 'public/images/invader_2.png';
-      break;
-    case 2:
-      alienScore = 20;
-      alienColour = '#00ff03';
-      alienImage = 'public/images/invader_2.png';
-      break;
-    case 3:
-      alienScore = 10;
-      alienColour = '#01fffe';
-      alienImage = 'public/images/invader_1.png';
-      break;
-    case 4:
-      alienScore = 10;
-      alienColour = '#ffff00';
-      alienImage = 'public/images/invader_1.png';
-      break;
-  }
+    switch (row) {
+        case 0:
+            alienScore = 30;
+            alienColour = '#0200cc';
+            alienImage = 'public/images/invader_3.png';
+            break;
+        case 1:
+            alienScore = 20;
+            alienColour = '#ff0002';
+            alienImage = 'public/images/invader_2.png';
+            break;
+        case 2:
+            alienScore = 20;
+            alienColour = '#00ff03';
+            alienImage = 'public/images/invader_2.png';
+            break;
+        case 3:
+            alienScore = 10;
+            alienColour = '#01fffe';
+            alienImage = 'public/images/invader_1.png';
+            break;
+        case 4:
+            alienScore = 10;
+            alienColour = '#ffff00';
+            alienImage = 'public/images/invader_1.png';
+            break;
+    }
 }
 
 function clearAliens() {
-  ctx.clearRect(10, 10, canvas.width, alienRowCount *
-    (alienHeight + alienPadding));
+    ctx.clearRect(10, 10, canvas.width, alienRowCount *
+        (alienHeight + alienPadding));
 }
 
 function checkAlienFirstInColumn(row, column) {
-  var isHead = true;
-  for (var i = 0; i < 5; i++) {
-    if (aliens[column][i].status === 1 && i > row) {
-      return false;
+    var isHead = true;
+    for (var i = 0; i < 5; i++) {
+        if (aliens[column][i].status === 1 && i > row) {
+            return false;
+        }
     }
-  }
-  return isHead;
+    return isHead;
 }
 
 function drawAlienSpaceShip() {
-  if (alienSpaceShip.status === 1) {
-    //var audio = new Audio('public/sounds/ufo_lowpitch.wav');
-    //audio.play();
-    alienSpaceShip.x += alienSpaceShipDx;
-    if (alienSpaceShip.x <= canvas.width && alienSpaceShip.x >= 0) {
-      ctx.drawImage(imgAlienSpaceShip, alienSpaceShip.x, alienSpaceShip.y,
-        alienSpaceShipWidth, alienSpaceShipHeight);
-    } else {
-      alienSpaceShip.status = 0;
+    if (alienSpaceShip.status === 1) {
+        //var audio = new Audio('public/sounds/ufo_lowpitch.wav');
+        //audio.play();
+        alienSpaceShip.x += alienSpaceShipDx;
+        if (alienSpaceShip.x <= canvas.width && alienSpaceShip.x >= 0) {
+            ctx.drawImage(imgAlienSpaceShip, alienSpaceShip.x, alienSpaceShip.y,
+                alienSpaceShipWidth, alienSpaceShipHeight);
+        } else {
+            alienSpaceShip.status = 0;
+        }
     }
-  }
 }
 
 function checkIfAlienSpaceShipHit() {
-  if (alienSpaceShip.status == 1 && missileStatus == 1) {
-    if (x > alienSpaceShip.x && x < alienSpaceShip.x + alienSpaceShipWidth &&
-        y > alienSpaceShip.y && y < alienSpaceShip.y + alienSpaceShipHeight) {
-          console.log('ALIEN SHIP HIT');
-          missileStatus = 0;
-          alienSpaceShip.status = 0;
-          score += alienSpaceShip.score;
-          alienHit = alienSpaceShip;
-          setUpAlienSpaceShip();
+    if (alienSpaceShip.status == 1 && missileStatus == 1) {
+        if (x > alienSpaceShip.x && x < alienSpaceShip.x + alienSpaceShipWidth &&
+            y > alienSpaceShip.y && y < alienSpaceShip.y + alienSpaceShipHeight) {
+            //console.log('ALIEN SHIP HIT');
+            missileStatus = 0;
+            alienSpaceShip.status = 0;
+            score += alienSpaceShip.score;
+            alienHit = alienSpaceShip;
+            setUpAlienSpaceShip();
         }
-  }
+    }
 }
 
 function drawAliens() {
-  clearAliens();
-  alienTopLeftX += alienDx;
-  alienTopRightX = alienTopLeftX + alienColumnCount *
-                    (alienWidth + alienPadding);
-  if ((alienTopLeftX < alienWidth) ||
-    (alienTopRightX > (canvas.width - alienWidth))) {
-    alienDx = -alienDx;
-    alienTopLeftY += alienDy;
-  }
-
-  var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
-  for (column = 0; column < alienColumnCount; column++) {
-    for (row = 0; row < alienRowCount; row++) {
-      if (aliens[column][row].status == 1) {
-        var alienX = (column * (alienWidth + alienPadding)) +
-                      alienOffsetLeft + alienTopLeftX;
-        var alienY = (row * (alienHeight + alienPadding)) +
-                      alienOffsetTop + alienTopLeftY;
-        setAlienColourAndScore(row);
-
-        aliens[column][row].x = alienX;
-        aliens[column][row].y = alienY;
-        aliens[column][row].score = alienScore;
-
-        if (aliens[column][row].status == 1 &&
-          (alienMissileStatus === 0) && (column === columnToFireFrom) &&
-          checkAlienFirstInColumn(row, column) === true) {
-            fireAlienMissile(aliens[column][row]);
-        }
-        if (alienY >= (canvas.height - alienHeight)) {
-          alienDy = 0;
-        }
-        var img = document.createElement('img');
-        img.src = alienImage;
-        ctx.drawImage(img, alienX, alienY, alienWidth, alienHeight);
-      }
+    clearAliens();
+    alienTopLeftX += alienDx;
+    alienTopRightX = alienTopLeftX + alienColumnCount *
+        (alienWidth + alienPadding);
+    if ((alienTopLeftX < alienWidth) ||
+        (alienTopRightX > (canvas.width - alienWidth))) {
+        alienDx = -alienDx;
+        alienTopLeftY += alienDy;
     }
-  }
+
+    var columnToFireFrom = Math.floor(Math.random() * alienRowCount);
+    for (column = 0; column < alienColumnCount; column++) {
+        for (row = 0; row < alienRowCount; row++) {
+            if (aliens[column][row].status == 1) {
+                var alienX = (column * (alienWidth + alienPadding)) +
+                    alienOffsetLeft + alienTopLeftX;
+                var alienY = (row * (alienHeight + alienPadding)) +
+                    alienOffsetTop + alienTopLeftY;
+                setAlienColourAndScore(row);
+
+                aliens[column][row].x = alienX;
+                aliens[column][row].y = alienY;
+                aliens[column][row].score = alienScore;
+
+                if (aliens[column][row].status == 1 &&
+                    (alienMissileStatus === 0) && (column === columnToFireFrom) &&
+                    checkAlienFirstInColumn(row, column) === true) {
+                    fireAlienMissile(aliens[column][row]);
+                }
+                if (alienY >= (canvas.height - alienHeight)) {
+                    alienDy = 0;
+                }
+                var img = document.createElement('img');
+                img.src = alienImage;
+                ctx.drawImage(img, alienX, alienY, alienWidth, alienHeight);
+            }
+        }
+    }
 }
 
 function addLifeIfRequired() {
-  if (score >= 1000 && lifeAdded === false) {
-    lives++;
-    drawLives();
-    lifeAdded = true;
-  }
+    if (score >= 1000 && lifeAdded === false) {
+        lives++;
+        drawLives();
+        lifeAdded = true;
+    }
 }
 
 function collisionDetection() {
-  for (column = 0; column < alienColumnCount; column++) {
-    for (row = 0; row < alienRowCount; row++) {
-      var alien = aliens[column][row];
-      if (alien.status == 1 && missileStatus == 1) {
-        if (x > alien.x && x < alien.x + alienWidth &&
-            y > alien.y && y < alien.y + alienHeight) {
-          missileStatus = 0;
-          alien.status = 0;
-          score += alien.score;
-          addLifeIfRequired();
-          numAliensHit++;
-          alienHit = alien;
-          if (numAliensHit == alienRowCount * alienColumnCount) {
-            setUpAliens();
-            numAliensHit = 0;
-            y = canvas.height - paddleHeight;
-            x = paddleX + (paddleWidth / 2);
-            missileSpeed++;
-            gameSpeed -= 10;
-          }
+    for (column = 0; column < alienColumnCount; column++) {
+        for (row = 0; row < alienRowCount; row++) {
+            var alien = aliens[column][row];
+            if (alien.status == 1 && missileStatus == 1) {
+                if (x > alien.x && x < alien.x + alienWidth &&
+                    y > alien.y && y < alien.y + alienHeight) {
+                    missileStatus = 0;
+                    alien.status = 0;
+                    score += alien.score;
+                    addLifeIfRequired();
+                    numAliensHit++;
+                    alienHit = alien;
+                    if (numAliensHit == alienRowCount * alienColumnCount) {
+                        setUpAliens();
+                        numAliensHit = 0;
+                        y = canvas.height - paddleHeight;
+                        x = paddleX + (paddleWidth / 2);
+                        missileSpeed++;
+                        gameSpeed -= 10;
+                    }
+                }
+            }
+            if (alien.status == 1) {
+                if (alien.x >= paddleX && alien.x <= (paddleX + paddleWidth) &&
+                    (alien.y + alienHeight) >= (canvas.height - paddleHeight)) {
+                    alert('GAME OVER - The Aliens Have Landed');
+                    gameOver();
+                }
+            }
         }
-      }
-      if (alien.status == 1) {
-        if (alien.x >= paddleX && alien.x <= (paddleX + paddleWidth) &&
-           (alien.y + alienHeight) >= (canvas.height - paddleHeight)) {
-          alert('GAME OVER - The Aliens Have Landed');
-          gameOver();
-        }
-      }
     }
-  }
 }
 
 function updateHighScore() {
-  var jsonString = localStorage.getItem('invadersHighScore');
-  if (jsonString === null) {
-    highScore = 0;
-  } else {
-    highScore = JSON.parse(jsonString);
-  }
+    var jsonString = localStorage.getItem('invadersHighScore');
+    if (jsonString === null) {
+        highScore = 0;
+    } else {
+        highScore = JSON.parse(jsonString);
+    }
 
-  if (score > highScore) {
-    highScore = score;
-    var jsonString = JSON.stringify(highScore);
-    localStorage.setItem('invadersHighScore', jsonString);
-  }
+    if (score > highScore) {
+        highScore = score;
+        var jsonString = JSON.stringify(highScore);
+        localStorage.setItem('invadersHighScore', jsonString);
+    }
 }
 
 function drawScore() {
-  ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#ffff00';
-  ctx.fillText('Score: ' + score, 8, 20);
+    ctx.font = '16px ZX-Spectrum';
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText('Score: ' + score, 8, 20);
 }
 
 function drawLives() {
-  ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#ffff00';
-  ctx.fillText('Lives: ' + lives, canvas.width - 140, 20);
+    ctx.font = '16px ZX-Spectrum';
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText('Lives: ' + lives, canvas.width - 140, 20);
 }
 
 function drawHighScore() {
-  ctx.font = '16px ZX-Spectrum';
-  ctx.fillStyle = '#ffff00';
-  ctx.fillText('High Score: ' + highScore, canvas.width - 600, 20);
+    ctx.font = '16px ZX-Spectrum';
+    ctx.fillStyle = '#ffff00';
+    ctx.fillText('High Score: ' + highScore, canvas.width - 600, 20);
 }
 
 function drawPaddle() {
-  var img = document.createElement('img');
-  img.src = 'public/images/cannon.png';
-  ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
-    paddleWidth, paddleHeight);
+    var img = document.createElement('img');
+    img.src = 'public/images/cannon.png';
+    ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
+        paddleWidth, paddleHeight);
 }
 
 document.addEventListener('keydown', keyDownHandler, false);
@@ -317,214 +317,210 @@ document.addEventListener('keyup', keyUpHandler, false);
 document.addEventListener('mousemove', mouseMoveHandler, false);
 
 function keyDownHandler(e) {
-  if (e.keyCode == 39) {
-    rightPressed = true;
-  }
-  else if (e.keyCode == 37) {
-    leftPressed = true;
-  }
-  else if (e.keyCode == 32) {
-    firePressed = true;
-    if (missileStatus !== 1) {
-      fire();
+    if (e.keyCode == 39) {
+        rightPressed = true;
+    } else if (e.keyCode == 37) {
+        leftPressed = true;
+    } else if (e.keyCode == 32) {
+        firePressed = true;
+        if (missileStatus !== 1) {
+            fire();
+        }
     }
-  }
 }
 
 function keyUpHandler(e) {
-  if (e.keyCode == 39) {
-    rightPressed = false;
-  }
-  else if (e.keyCode == 37) {
-    leftPressed = false;
-  }
-  else if (e.keyCode == 32) {
-    firePressed = false;
-  }
+    if (e.keyCode == 39) {
+        rightPressed = false;
+    } else if (e.keyCode == 37) {
+        leftPressed = false;
+    } else if (e.keyCode == 32) {
+        firePressed = false;
+    }
 }
 
 function mouseMoveHandler(e) {
-  var relativeX = e.clientX - canvas.offsetLeft;
-  if (relativeX > 0 && relativeX < canvas.width) {
-    paddleX = relativeX - paddleWidth / 2;
-  }
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth / 2;
+    }
 }
 
 function fireAlienMissile(alien) {
-  alienMissileStatus = 1;
-  missileX = alien.x + (alienWidth / 2);
-  missileY = alien.y + alienHeight;
+    alienMissileStatus = 1;
+    missileX = alien.x + (alienWidth / 2);
+    missileY = alien.y + alienHeight;
 }
 
 function drawAlienMissile() {
-  if (alienMissileStatus === 1) {
-    ctx.beginPath();
-    ctx.rect(missileX, missileY, 2, alienMissileHeight);
-    ctx.fillStyle = '#ffffff';
-    ctx.fill();
-    ctx.closePath();
-  }
+    if (alienMissileStatus === 1) {
+        ctx.beginPath();
+        ctx.rect(missileX, missileY, 2, alienMissileHeight);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.closePath();
+    }
 }
 
 function eraseAlienMissile() {
-  alienMissileStatus = 0;
+    alienMissileStatus = 0;
 }
 
 function hitByAlien() {
-  if (((missileY + alienMissileHeight) >= (canvas.height)) &&
-    (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) {
-    console.log('HIT!!!!!!');
-    eraseAlienMissile();
-    return true;
-  }
+    if (((missileY + alienMissileHeight) >= (canvas.height)) &&
+        (missileX >= paddleX) && (missileX <= (paddleX + paddleWidth))) {
+        //console.log('HIT!!!!!!');
+        eraseAlienMissile();
+        return true;
+    }
 }
 
 function fire() {
-  missileStatus = 1;
-  x = paddleX + (paddleWidth / 2) - 2;
-  y = canvas.height - (paddleHeight + 2);
-  var audio = new Audio('public/sounds/shoot.wav');
-  audio.play();
+    missileStatus = 1;
+    x = paddleX + (paddleWidth / 2) - 2;
+    y = canvas.height - (paddleHeight + 2);
+    var audio = new Audio('public/sounds/shoot.wav');
+    audio.play();
 }
 
 function drawMissile() {
-  if (missileStatus === 1) {
-    ctx.beginPath();
-    ctx.rect(x, y, 2, 10);
-    ctx.fillStyle = '#ffff00';
-    ctx.fill();
-    ctx.closePath();
-  }
+    if (missileStatus === 1) {
+        ctx.beginPath();
+        ctx.rect(x, y, 2, 10);
+        ctx.fillStyle = '#ffff00';
+        ctx.fill();
+        ctx.closePath();
+    }
 }
 
 function eraseMissile() {
-  missileStatus = 0;
-  x = paddleX + (paddleWidth / 2);
-  y = canvas.height - (paddleHeight + 2);
+    missileStatus = 0;
+    x = paddleX + (paddleWidth / 2);
+    y = canvas.height - (paddleHeight + 2);
 }
 
 function drawPlayerExplosion() {
-  ctx.clearRect(paddleX, canvas.height - paddleHeight,
-    paddleWidth, paddleHeight);
-  var img = document.createElement('img');
-  img.src = 'public/images/explosion.png';
-  ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
-    paddleWidth, paddleHeight);
-  var audio = new Audio('public/sounds/explosion.wav');
-  audio.play();
+    ctx.clearRect(paddleX, canvas.height - paddleHeight,
+        paddleWidth, paddleHeight);
+    var img = document.createElement('img');
+    img.src = 'public/images/explosion.png';
+    ctx.drawImage(img, paddleX, canvas.height - paddleHeight,
+        paddleWidth, paddleHeight);
+    var audio = new Audio('public/sounds/explosion.wav');
+    audio.play();
 }
 
 function drawAlienExplosion() {
-  console.log('ALIEN HIT!!!!!!', alienHit);
-  if (alienHit === alienSpaceShip) {
-    ctx.font = '16px ZX-Spectrum';
-    ctx.fillStyle = '#ff0000';
-    ctx.clearRect(alienSpaceShip.x, alienSpaceShip.y , alienSpaceShipWidth, alienSpaceShipHeight);
-    ctx.fillText(alienSpaceShip.score, alienSpaceShip.x, alienSpaceShip.y + alienSpaceShipHeight);
-  } else {
-    ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
-    ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
-  }
-  var audio = new Audio('public/sounds/invaderkilled.wav');
-  audio.play();
-  alienHit = null;
+    //console.log('ALIEN HIT!!!!!!', alienHit);
+    if (alienHit === alienSpaceShip) {
+        ctx.font = '16px ZX-Spectrum';
+        ctx.fillStyle = '#ff0000';
+        ctx.clearRect(alienSpaceShip.x, alienSpaceShip.y, alienSpaceShipWidth, alienSpaceShipHeight);
+        ctx.fillText(alienSpaceShip.score, alienSpaceShip.x, alienSpaceShip.y + alienSpaceShipHeight);
+    } else {
+        ctx.clearRect(alienHit.x, alienHit.y, alienWidth, alienHeight);
+        ctx.drawImage(imgAlienExplosion, alienHit.x, alienHit.y, alienWidth, alienHeight);
+    }
+    var audio = new Audio('public/sounds/invaderkilled.wav');
+    audio.play();
+    alienHit = null;
 }
 
 function playAlienMoveSound(id) {
-  var audio;
-  if (id === 0) {
-    audio = new Audio('public/sounds/fastinvader1.wav');
-  } else {
-    audio = new Audio('public/sounds/fastinvader2.wav');
-  }
-  audio.play();
+    var audio;
+    if (id === 0) {
+        audio = new Audio('public/sounds/fastinvader1.wav');
+    } else {
+        audio = new Audio('public/sounds/fastinvader2.wav');
+    }
+    audio.play();
 }
 
 var count = 0;
+
 function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  drawMissile();
-  drawAlienMissile();
-  drawAliens();
-
-  if (count % 100 === 0) {
-    playAlienMoveSound(0);
-  } else if (count % 50 === 0) {
-    playAlienMoveSound(1);
-  }
-
-  drawPaddle();
-  drawScore();
-  drawLives();
-  updateHighScore();
-  drawHighScore();
-  drawAlienSpaceShip();
-
-  collisionDetection();
-  checkIfAlienSpaceShipHit();
-
-  if (hitByAlien() == true) {
-    lives--;
-    drawLives();
-    drawPlayerExplosion();
-  }
-
-  if (alienHit != null) {
-    drawAlienExplosion();
-    alienHit = null;
-  }
-
-  if (alienSpaceShip.status === 0) {
-    setUpAlienSpaceShip();
-  }
-
-  if (lives === 0) {
-    //alert('Game Over');
-    gameOver();
-  }
-
-  if (y <= 10) {
-    eraseMissile();
-  } else {
     drawMissile();
-  }
+    drawAlienMissile();
+    drawAliens();
 
-  if (missileY >= canvas.height) {
-    eraseAlienMissile();
-  }
+    if (count % 100 === 0) {
+        playAlienMoveSound(0);
+    } else if (count % 50 === 0) {
+        playAlienMoveSound(1);
+    }
 
-  if (rightPressed && paddleX < canvas.width - paddleWidth) {
-    paddleX += paddleSpeed;
-  }
-  else if (leftPressed && paddleX > 0) {
-    paddleX -= paddleSpeed;
-  }
+    drawPaddle();
+    drawScore();
+    drawLives();
+    updateHighScore();
+    drawHighScore();
+    drawAlienSpaceShip();
 
-  x += dx;
-  y += dy;
-  missileY += 1;
+    collisionDetection();
+    checkIfAlienSpaceShipHit();
 
-  req = requestAnimationFrame(draw);
-  count++;
+    if (hitByAlien() == true) {
+        lives--;
+        drawLives();
+        drawPlayerExplosion();
+    }
+
+    if (alienHit != null) {
+        drawAlienExplosion();
+        alienHit = null;
+    }
+
+    if (alienSpaceShip.status === 0) {
+        setUpAlienSpaceShip();
+    }
+
+    if (lives === 0) {
+        //alert('Game Over');
+        gameOver();
+    }
+
+    if (y <= 10) {
+        eraseMissile();
+    } else {
+        drawMissile();
+    }
+
+    if (missileY >= canvas.height) {
+        eraseAlienMissile();
+    }
+
+    if (rightPressed && paddleX < canvas.width - paddleWidth) {
+        paddleX += paddleSpeed;
+    } else if (leftPressed && paddleX > 0) {
+        paddleX -= paddleSpeed;
+    }
+
+    x += dx;
+    y += dy;
+    missileY += 1;
+
+    req = requestAnimationFrame(draw);
+    count++;
 }
 
 
-var newGame = function () {
-  lives = 3;
-  score = 0;
-  setUpAliens();
-  setUpAlienSpaceShip();
-  //setInterval(draw, gameSpeed);
-  req = requestAnimationFrame(draw);
+var newGame = function() {
+    lives = 3;
+    score = 0;
+    setUpAliens();
+    setUpAlienSpaceShip();
+    //setInterval(draw, gameSpeed);
+    req = requestAnimationFrame(draw);
 };
 
 var gameOver = function() {
-  //clearInterval(draw);
-  alert('Game Over');
-  window.cancelAnimationFrame(req);
-  //location.reload();
-  cancelAnimationFrame(globalID);
+    //clearInterval(draw);
+    alert('Game Over');
+    window.cancelAnimationFrame(req);
+    //location.reload();
+    cancelAnimationFrame(globalID);
 }
 
 newGame();
